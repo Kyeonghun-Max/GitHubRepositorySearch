@@ -19,7 +19,9 @@ class GitHubRepository @Inject constructor(private val retroInstance: GitHubApiS
         val call = retroInstance.getRepositoryList(query)
         call.enqueue(object : Callback<RepositoryItemList> {
             override fun onResponse(call: retrofit2.Call<RepositoryItemList>, response: Response<RepositoryItemList>) {
-                _itemList.postValue(response.body()?.items!!)
+                response.body()?.let {
+                    _itemList.postValue(it.items)
+                }
             }
 
             override fun onFailure(call: retrofit2.Call<RepositoryItemList>, t: Throwable) {
