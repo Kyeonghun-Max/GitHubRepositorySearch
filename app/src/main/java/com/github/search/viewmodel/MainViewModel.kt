@@ -10,9 +10,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val repository: GitHubRepository) : ViewModel() {
+class MainViewModel @Inject constructor(private val repository: GitHubRepository, val adapter: RepositoryListAdapter) : ViewModel() {
 
-    val adapter = MutableLiveData(RepositoryListAdapter())
     val totalCount = MutableLiveData(createTotalCountTest(0))
     val showNoResults = MutableLiveData(false)
     val inputKeyword = MutableLiveData("")
@@ -25,7 +24,7 @@ class MainViewModel @Inject constructor(private val repository: GitHubRepository
                 showNoResults.postValue(true)
             } else {
                 showNoResults.postValue(false)
-                adapter.value?.setItems(createVms(it.items))
+                adapter.setItems(createVms(it.items))
             }
         }
     }

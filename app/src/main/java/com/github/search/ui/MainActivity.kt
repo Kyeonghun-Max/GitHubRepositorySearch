@@ -6,11 +6,16 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.github.search.R
 import com.github.search.databinding.ActivityMainBinding
+import com.github.search.ui.adapter.RepositoryListAdapter
 import com.github.search.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var adapter: RepositoryListAdapter
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel

@@ -5,8 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.search.databinding.RowRepositoryItemBinding
 import com.github.search.viewmodel.RepositoryItemViewModel
+import javax.inject.Inject
 
-class RepositoryListAdapter : RecyclerView.Adapter<RepositoryListAdapter.ViewHolder>() {
+class RepositoryListAdapter @Inject constructor() : RecyclerView.Adapter<RepositoryListAdapter.ViewHolder>() {
     private var items: List<RepositoryItemViewModel>? = null
 
     fun setItems(items: List<RepositoryItemViewModel>) {
