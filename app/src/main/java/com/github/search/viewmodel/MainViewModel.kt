@@ -5,13 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.search.R
 import com.github.search.network.model.RepositoryItem
-import com.github.search.network.model.RepositoryItemList
 import com.github.search.repository.GitHubRepository
 import com.github.search.ui.adapter.RepositoryListAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,15 +19,17 @@ class MainViewModel @Inject constructor(private val repository: GitHubRepository
         SEARCH_FAILED(R.string.search_failed)
     }
 
+    private var job: Job? = null
     private val perPage = 50
     private var nextPage = 1
+    private var isLoading = false
     private val totalCount = MutableLiveData(0)
+
     val totalCountText = MutableLiveData(getTotalCountText(0))
-    val showErrorText = MutableLiveData(false)
-    val errorStringRes = MutableLiveData(ErrorType.NO_ITEMS.stringRes)
+    val showErrorText = MutableLiveData(true)
+    val errorStringRes = MutableLiveData(ErrorType.NO_KEYWORD.stringRes)
     val inputKeyword = MutableLiveData("")
-    val isSearching = MutableLiveData(false)
-    var isMoreLoading = false
+    val showProgress = MutableLiveData(false)
 
     fun observeData(owner: LifecycleOwner) {
         totalCount.observe(owner) {
@@ -41,7 +40,6 @@ class MainViewModel @Inject constructor(private val repository: GitHubRepository
     fun onSearchBtnClicked() {
         inputKeyword.value?.let {
             if (it.isNotEmpty()) {
-                isSearching.postValue(true)
                 keywordSearch(it)
             } else {
                 showErrorText(ErrorType.NO_KEYWORD)
@@ -52,66 +50,73 @@ class MainViewModel @Inject constructor(private val repository: GitHubRepository
     }
 
     private fun keywordSearch(keyword: String) {
-        repository.request(keyword, perPage, 1, object : Callback<RepositoryItemList> {
-            override fun onResponse(call: Call<RepositoryItemList>, response: Response<RepositoryItemList>) {
-                isSearching.postValue(false)
+        if (isLoading) return
 
-                response.body()?.let { resultData ->
-                    totalCount.postValue(resultData.totalCount)
+        showProgress.postValue(true)
 
-                    if (resultData.totalCount == 0) {
+        job = CoroutineScope(Dispatchers.IO).launch {
+            val response = repository.request(keyword, perPage, 1)
+
+            withContext(Dispatchers.Main) {
+                showProgress.postValue(false)
+
+                val responseData = response.body()
+                if (response.isSuccessful && responseData != null) {
+                    totalCount.postValue(responseData.totalCount)
+
+                    if (responseData.totalCount == 0) {
                         showErrorText(ErrorType.NO_ITEMS)
                     } else {
                         showErrorText.postValue(false)
-                        val resultItems = resultData.items
-                        val enableLoadMore = resultItems.size < resultData.totalCount
+                        val resultItems = responseData.items
+
+                        val enableLoadMore = resultItems.size < responseData.totalCount
                         if (enableLoadMore) {
                             nextPage++
                         }
 
                         adapter.setItems(createVms(resultItems, enableLoadMore))
                     }
+                } else {
+                    showErrorText(ErrorType.SEARCH_FAILED)
                 }
             }
-
-            override fun onFailure(call: Call<RepositoryItemList>, t: Throwable) {
-                isSearching.postValue(false)
-                showErrorText(ErrorType.SEARCH_FAILED)
-            }
-        })
+        }
     }
 
     fun loadMore() {
-        inputKeyword.value?.let { it ->
-            if (!isMoreLoading && adapter.getRealItemCount() < (totalCount.value ?: 0)) {
-                isMoreLoading = true
+        job = CoroutineScope(Dispatchers.IO).launch {
+            inputKeyword.value?.let { keyword ->
+                if (!isLoading && adapter.getRealItemCount() < (totalCount.value ?: 0)) {
+                    isLoading = true
 
-                repository.request(it, perPage, nextPage, object : Callback<RepositoryItemList> {
-                    override fun onResponse(call: Call<RepositoryItemList>, response: Response<RepositoryItemList>) {
-                        isMoreLoading = false
+                    val response = repository.request(keyword, perPage, nextPage)
 
-                        response.body()?.let { resultData ->
-                            totalCount.postValue(resultData.totalCount)
+                    withContext(Dispatchers.Main) {
+                        showProgress.postValue(false)
 
-                            if (resultData.items.isNotEmpty()) {
-                                showErrorText.postValue(false)
-                                val enableLoadMore = (adapter.getRealItemCount() + resultData.items.size) < resultData.totalCount
-                                adapter.addItems(createVms(resultData.items, enableLoadMore))
+                        val responseData = response.body()
+                        if (response.isSuccessful && responseData != null) {
+                                totalCount.postValue(responseData.totalCount)
 
-                                if (adapter.getRealItemCount() < resultData.totalCount) {
-                                    nextPage++
+                                if (responseData.items.isNotEmpty()) {
+                                    showErrorText.postValue(false)
+                                    val enableLoadMore = (adapter.getRealItemCount() + responseData.items.size) < responseData.totalCount
+                                    adapter.addItems(createVms(responseData.items, enableLoadMore))
+
+                                    if (adapter.getRealItemCount() < responseData.totalCount) {
+                                        nextPage++
+                                    }
+                                } else {
+                                    adapter.removeLoadingVm()
                                 }
-                            } else {
-                                adapter.removeLoadingVm()
-                            }
+                        } else {
+                            adapter.removeLoadingVm()
                         }
-                    }
 
-                    override fun onFailure(call: Call<RepositoryItemList>, t: Throwable) {
-                        isMoreLoading = false
-                        adapter.removeLoadingVm()
+                        isLoading = false
                     }
-                })
+                }
             }
         }
     }
@@ -123,7 +128,7 @@ class MainViewModel @Inject constructor(private val repository: GitHubRepository
     }
 
     private fun getTotalCountText(totalCount: Int): String {
-        return "$totalCount items"
+        return "Total $totalCount items"
     }
 
     private fun createVms(items: List<RepositoryItem>, enableLoadMore: Boolean): ArrayList<ViewModel> {
