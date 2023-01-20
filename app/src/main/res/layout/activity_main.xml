@@ -4,6 +4,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.github.search.viewmodel.MainViewModel" />
@@ -11,16 +13,17 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/white">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/search_btn_height"
-            android:text="@string/search"
-            android:textSize="@dimen/search_btn_font_size"
-            android:textColor="@color/black"
             android:onClick="@{() -> vm.onSearchBtnClicked()}"
+            android:text="@string/search"
+            android:textColor="@color/black"
+            android:textSize="@dimen/search_btn_font_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,11 +32,54 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/edit_text_height"
             android:layout_marginHorizontal="10dp"
+            android:enabled="@{!vm.isLoading}"
             android:hint="@string/hint_search"
+            android:text="@={vm.inputKeyword}"
             android:textColor="@color/black"
             android:textSize="@dimen/edit_text_font_size"
-            android:text="@={vm.inputKeyword}"
             app:layout_constraintEnd_toStartOf="@id/btn_search"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/total_count"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/total_count_height"
+            android:gravity="end"
+            android:padding="5dp"
+            android:text="@{vm.totalCount}"
+            android:textColor="@color/black"
+            android:textSize="@dimen/total_count_font_size"
+            app:layout_constraintTop_toBottomOf="@id/input_keyword" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:adapter="@{vm.adapter}"
+            android:visibility="@{vm.showErrorText? View.GONE : View.VISIBLE}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/total_count" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:text="@{vm.errorStringRes}"
+            android:textSize="@dimen/error_font_size"
+            android:textStyle="bold"
+            android:visibility="@{vm.showErrorText? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/total_count" />
+
+        <ProgressBar
+            android:layout_width="@dimen/loading_progress_size"
+            android:layout_height="@dimen/loading_progress_size"
+            android:visibility="@{vm.isLoading ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

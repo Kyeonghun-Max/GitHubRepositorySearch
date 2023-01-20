@@ -2,6 +2,12 @@
 <resources>
     <dimen name="edit_text_height">50dp</dimen>
     <dimen name="search_btn_height">50dp</dimen>
+    <dimen name="total_count_height">40dp</dimen>
     <dimen name="edit_text_font_size">20sp</dimen>
     <dimen name="search_btn_font_size">20sp</dimen>
+    <dimen name="total_count_font_size">20sp</dimen>
+    <dimen name="repository_item_img_size">60dp</dimen>
+    <dimen name="repository_item_font_size">15sp</dimen>
+    <dimen name="error_font_size">25sp</dimen>
+    <dimen name="loading_progress_size">50dp</dimen>
 </resources>

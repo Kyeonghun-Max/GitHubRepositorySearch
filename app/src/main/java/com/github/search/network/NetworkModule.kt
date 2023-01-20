@@ -1,6 +1,5 @@
-package com.github.search.module
+package com.github.search.network
 
-import com.github.search.network.GitHubApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
