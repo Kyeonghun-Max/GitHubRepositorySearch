@@ -5,6 +5,8 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.search.R
 import com.github.search.databinding.ActivityMainBinding
 import com.github.search.ui.adapter.RepositoryListAdapter
@@ -28,10 +30,22 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView<ActivityMainBinding?>(this, R.layout.activity_main).apply {
             lifecycleOwner = this@MainActivity
             vm = viewModel
+
+            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
+                    recyclerView.adapter?.let {
+                        if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == it.itemCount - 1) {
+                            viewModel.loadMore()
+                        }
+                    }
+                }
+            })
         }
 
-        viewModel.observeRepository(this)
-        viewModel.isLoading.observe(this) { loading ->
+        viewModel.observeData(this)
+        viewModel.isSearching.observe(this) { loading ->
             if (loading) {
                 window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             } else {
