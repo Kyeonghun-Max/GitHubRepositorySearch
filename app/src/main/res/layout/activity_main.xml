@@ -32,6 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/edit_text_height"
             android:layout_marginHorizontal="10dp"
+            android:enabled="@{!vm.isLoading}"
             android:hint="@string/hint_search"
             android:text="@={vm.inputKeyword}"
             android:textColor="@color/black"
@@ -72,5 +73,14 @@
             android:visibility="@{vm.showNoResults? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/total_count" />
+
+        <ProgressBar
+            android:layout_width="@dimen/loading_progress_size"
+            android:layout_height="@dimen/loading_progress_size"
+            android:visibility="@{vm.isLoading ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -10,8 +10,8 @@ import javax.inject.Inject
 
 class GitHubRepository @Inject constructor(private val retroInstance: GitHubApiService) {
 
-    private val _result: MutableLiveData<RepositoryItemList> = MutableLiveData()
-    val result: LiveData<RepositoryItemList>
+    private val _result: MutableLiveData<RepositoryItemList?> = MutableLiveData()
+    val result: LiveData<RepositoryItemList?>
         get() = _result
 
     fun request(query: String) {

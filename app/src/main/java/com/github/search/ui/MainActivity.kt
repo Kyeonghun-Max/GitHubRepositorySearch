@@ -1,6 +1,7 @@
 package com.github.search.ui
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -30,5 +31,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.observeRepository(this)
+        viewModel.isLoading.observe(this) { loading ->
+            if (loading) {
+                window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            }
+        }
     }
 }
