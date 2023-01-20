@@ -6,4 +6,6 @@
     <dimen name="edit_text_font_size">20sp</dimen>
     <dimen name="search_btn_font_size">20sp</dimen>
     <dimen name="total_count_font_size">20sp</dimen>
+    <dimen name="repository_item_img_size">60dp</dimen>
+    <dimen name="repository_item_font_size">15sp</dimen>
 </resources>
