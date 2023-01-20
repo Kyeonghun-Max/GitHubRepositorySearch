@@ -6,7 +6,7 @@
 
         <variable
             name="vm"
-            type="com.github.search.viewmodel.RepositoryItemViewModel" />
+            type="com.github.search.viewmodel.ItemViewModel" />
     </data>
 
     <androidx.cardview.widget.CardView
