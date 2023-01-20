@@ -2,6 +2,8 @@
 <resources>
     <dimen name="edit_text_height">50dp</dimen>
     <dimen name="search_btn_height">50dp</dimen>
+    <dimen name="total_count_height">40dp</dimen>
     <dimen name="edit_text_font_size">20sp</dimen>
     <dimen name="search_btn_font_size">20sp</dimen>
+    <dimen name="total_count_font_size">20sp</dimen>
 </resources>

@@ -27,5 +27,6 @@ class MainActivity : AppCompatActivity() {
     private fun initViewModel() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         binding.vm = viewModel
+        viewModel.observeRepository(this)
     }
 }
