@@ -5,4 +5,5 @@
     <string name="title_id">id :</string>
     <string name="title_name">name :</string>
     <string name="title_description">description :</string>
+    <string name="no_items">검색 결과가\n존재하지 않습니다.</string>
 </resources>

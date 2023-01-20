@@ -1,7 +1,6 @@
 package com.github.search.viewmodel
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.search.network.model.RepositoryItem
@@ -13,26 +12,29 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repository: GitHubRepository) : ViewModel() {
 
-    private val _adapter = MutableLiveData(RepositoryListAdapter())
-    val adapter: LiveData<RepositoryListAdapter>
-        get() = _adapter
-
-    private val _totalCount = MutableLiveData(createTotalCountTest(0))
-    val totalCount: LiveData<String>
-        get() = _totalCount
-
+    val adapter = MutableLiveData(RepositoryListAdapter())
+    val totalCount = MutableLiveData(createTotalCountTest(0))
+    val showNoResults = MutableLiveData(false)
     val inputKeyword = MutableLiveData("")
 
     fun observeRepository(owner: LifecycleOwner) {
         repository.result.observe(owner) {
-            _totalCount.postValue(createTotalCountTest(it.totalCount))
-            adapter.value?.setItems(createVms(it.items))
+            totalCount.postValue(createTotalCountTest(it.totalCount))
+
+            if (it.totalCount == 0) {
+                showNoResults.postValue(true)
+            } else {
+                showNoResults.postValue(false)
+                adapter.value?.setItems(createVms(it.items))
+            }
         }
     }
 
     fun onSearchBtnClicked() {
         inputKeyword.value?.let {
             repository.request(it)
+        } ?: run {
+            showNoResults.postValue(true)
         }
     }
 

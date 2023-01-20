@@ -4,6 +4,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.github.search.viewmodel.MainViewModel" />
@@ -54,7 +56,20 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:adapter="@{vm.adapter}"
+            android:visibility="@{vm.showNoResults? View.GONE : View.VISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/total_count" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:text="@string/no_items"
+            android:textSize="@dimen/no_items_font_size"
+            android:textStyle="bold"
+            android:visibility="@{vm.showNoResults? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/total_count" />
     </androidx.constraintlayout.widget.ConstraintLayout>
