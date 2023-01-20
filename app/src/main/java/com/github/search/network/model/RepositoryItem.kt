@@ -9,6 +9,6 @@ data class RepositoryItem(
     @SerializedName("owner") val owner: Owner?
 ) {
     fun toViewModel(): RepositoryItemViewModel {
-        return RepositoryItemViewModel(owner?.id ?: "", name ?: "", description ?: "", owner?.avatarUrl ?: "")
+        return RepositoryItemViewModel(owner?.login ?: "", name ?: "", description ?: "", owner?.avatarUrl ?: "")
     }
 }
