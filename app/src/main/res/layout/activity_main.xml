@@ -57,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:adapter="@{vm.adapter}"
-            android:visibility="@{vm.showNoResults? View.GONE : View.VISIBLE}"
+            android:visibility="@{vm.showErrorText? View.GONE : View.VISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/total_count" />
@@ -67,10 +67,10 @@
             android:layout_height="0dp"
             android:background="@color/white"
             android:gravity="center"
-            android:text="@string/no_items"
-            android:textSize="@dimen/no_items_font_size"
+            android:text="@{vm.errorStringRes}"
+            android:textSize="@dimen/error_font_size"
             android:textStyle="bold"
-            android:visibility="@{vm.showNoResults? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.showErrorText? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/total_count" />
 
