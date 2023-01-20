@@ -32,7 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/edit_text_height"
             android:layout_marginHorizontal="10dp"
-            android:enabled="@{!vm.isSearching}"
+            android:enabled="@{!vm.showProgress}"
             android:hint="@string/hint_search"
             android:text="@={vm.inputKeyword}"
             android:textColor="@color/black"
@@ -77,7 +77,7 @@
         <ProgressBar
             android:layout_width="@dimen/loading_progress_size"
             android:layout_height="@dimen/loading_progress_size"
-            android:visibility="@{vm.isSearching ? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.showProgress ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

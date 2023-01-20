@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
             recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
+
                     val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
                     recyclerView.adapter?.let {
                         if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == it.itemCount - 1) {
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.observeData(this)
-        viewModel.isSearching.observe(this) { loading ->
+        viewModel.showProgress.observe(this) { loading ->
             if (loading) {
                 window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             } else {
