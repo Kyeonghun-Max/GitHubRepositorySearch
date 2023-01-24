@@ -5,8 +5,6 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.github.search.R
 import com.github.search.databinding.ActivityMainBinding
 import com.github.search.ui.adapter.RepositoryListAdapter
@@ -30,21 +28,12 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView<ActivityMainBinding?>(this, R.layout.activity_main).apply {
             lifecycleOwner = this@MainActivity
             vm = viewModel
-
-            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-
-                    val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
-                    recyclerView.adapter?.let {
-                        if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == it.itemCount - 1) {
-                            viewModel.loadMore()
-                        }
-                    }
-                }
-            })
         }
 
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
         viewModel.observeData(this)
         viewModel.showProgress.observe(this) { loading ->
             if (loading) {

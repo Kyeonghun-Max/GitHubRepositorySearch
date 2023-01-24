@@ -60,7 +60,8 @@
             android:visibility="@{vm.showErrorText? View.GONE : View.VISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/total_count" />
+            app:layout_constraintTop_toBottomOf="@id/total_count"
+            app:scrollListener="@{vm.loadMoreListener}" />
 
         <TextView
             android:layout_width="match_parent"

@@ -3,6 +3,8 @@ package com.github.search.viewmodel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.search.R
 import com.github.search.network.model.RepositoryItem
 import com.github.search.repository.GitHubRepository
@@ -30,6 +32,18 @@ class MainViewModel @Inject constructor(private val repository: GitHubRepository
     val errorStringRes = MutableLiveData(ErrorType.NO_KEYWORD.stringRes)
     val inputKeyword = MutableLiveData("")
     val showProgress = MutableLiveData(false)
+    val loadMoreListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+
+            val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
+            recyclerView.adapter?.let {
+                if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == it.itemCount - 1) {
+                    loadMore()
+                }
+            }
+        }
+    }
 
     fun observeData(owner: LifecycleOwner) {
         totalCount.observe(owner) {
@@ -97,19 +111,19 @@ class MainViewModel @Inject constructor(private val repository: GitHubRepository
 
                         val responseData = response.body()
                         if (response.isSuccessful && responseData != null) {
-                                totalCount.postValue(responseData.totalCount)
+                            totalCount.postValue(responseData.totalCount)
 
-                                if (responseData.items.isNotEmpty()) {
-                                    showErrorText.postValue(false)
-                                    val enableLoadMore = (adapter.getRealItemCount() + responseData.items.size) < responseData.totalCount
-                                    adapter.addItems(createVms(responseData.items, enableLoadMore))
+                            if (responseData.items.isNotEmpty()) {
+                                showErrorText.postValue(false)
+                                val enableLoadMore = (adapter.getRealItemCount() + responseData.items.size) < responseData.totalCount
+                                adapter.addItems(createVms(responseData.items, enableLoadMore))
 
-                                    if (adapter.getRealItemCount() < responseData.totalCount) {
-                                        nextPage++
-                                    }
-                                } else {
-                                    adapter.removeLoadingVm()
+                                if (adapter.getRealItemCount() < responseData.totalCount) {
+                                    nextPage++
                                 }
+                            } else {
+                                adapter.removeLoadingVm()
+                            }
                         } else {
                             adapter.removeLoadingVm()
                         }
